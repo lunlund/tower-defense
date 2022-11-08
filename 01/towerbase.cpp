@@ -12,90 +12,27 @@ double towerbase::distance(int a,int b,int c,int d)
 }
 void towerbase::Attack(QVector<enemybase*> &enemy)
 {
-//    double dis;
-//    int x,y;
-//A:
-//    //targetEnemy=enemy[0];
-//    if(targetEnemy==NULL)
-//    {enemybase *enemyIt=enemy.front();
-//    for(int i=0;i<=enemy.size()-1;i++)
-//    {
-//        if(i==0)
-//        {
-//            dis=distance(enemy[i]->CoorX,enemy[i]->CoorY,this->CoorX,this->CoorY);
-//        }
-//        else
-//        {
-//            if(distance(enemy[i]->CoorX,enemy[i]->CoorY,this->CoorX,this->CoorY)<dis)
-//            {
-//                dis=distance(enemy[i]->CoorX,enemy[i]->CoorY,this->CoorX,this->CoorY);
-//                enemyIt=enemy[i];
-//            }
-//        }
-//    }
-//    if(dis<=range)
-//    {
-//        this->targetEnemy=enemyIt;
-//    }
-//    else
-//    {targetEnemy=NULL;}
-//    }
+            if(counter%10==0&&targetEnemy!=NULL)
+           {angle=-qAtan2((this->CoorY+50-targetEnemy->CoorY-70),(targetEnemy->CoorX+100-this->CoorX-41.5))*180/3.1415;
+                bullet *bull=new bullet;
+                bull->x=50*qCos(-angle*3.1415/180);
+                bull->y=50*qSin(-angle*3.1415/180);
+                bull->CoorX=this->CoorX+41.5*qCos(-angle*3.1415/180);
+                bull->CoorY=this->CoorY+50*qSin(-angle*3.1415/180);
+                bull->signal=4;
+                bull->time=0;
+                bull->targetenemy=targetEnemy;
+                bulletVec.push_back(bull);}
+                if(enemy.size()==0)
+                {
+                    for(auto bul=bulletVec.begin();bul!=bulletVec.end();bul++)
+                    {
+                        delete *bul;
+                    }
+                    bulletVec.clear();
+                    return;
+                }
 
-//    else
-//    {
-//        if(distance(targetEnemy->CoorX,targetEnemy->CoorY,CoorX,CoorY)>range)
-//        {targetEnemy=NULL;
-//            goto A;}
-//        angle=qAtan2((targetEnemy->CoorY-this->CoorY),(targetEnemy->CoorX-this->CoorX))*180/3.1415;
-//        if(targetEnemy->CoorY-this->CoorY<0&&targetEnemy->CoorX-this->CoorX<0)
-//        {
-//            angle=angle+180;
-//        }
-//        if(targetEnemy->CoorY-this->CoorY<0&&targetEnemy->CoorX-this->CoorX>0)
-//        {
-//            angle=angle+180;
-//        }
-//        angle=-angle;
-//        bullet *bull=new bullet;
-//        bull->x=30*cos(-angle);
-//        bull->y=30*sin(-angle);
-//        bull->CoorX=this->CoorX+41.5;
-//        bull->CoorY=this->CoorY+50;
-//        bulletVec.push_back(bull);
-//    }
-//    for(int i=0;i<=this->bulletVec.size()-1;i++)
-//    {
-//        bulletVec[i]->CoorX+=x;
-//        bulletVec[i]->CoorY+=y;
-//        if(distance(bulletVec[i]->CoorX,bulletVec[i]->CoorY,targetEnemy->CoorX,targetEnemy->CoorY)<20)
-//        {targetEnemy->health-=this->attackpower;
-//            bulletVec.erase(bulletVec.begin()+i);
-//                        delete bulletVec[i];}
-//        if(bulletVec[i]->CoorX<0||bulletVec[i]->CoorY<0||bulletVec[i]->CoorY>600||bulletVec[i]->CoorX>1011)
-//           { bulletVec.erase(bulletVec.begin()+i);
-//            delete bulletVec[i];}
-
-//    }
-//    for(int i=0;i<=enemy.size()-1;i++)
-//    {
-//        if(enemy[i]->health<=0)
-//        {
-//            enemy.erase(enemy.begin()+i);
-//            delete enemy[i];
-//        }
-
-//    }
-    if(counter%5==0)
-           { targetEnemy=enemy[0];
-            angle=-qAtan2((this->CoorY-targetEnemy->CoorY),(targetEnemy->CoorX-this->CoorX))*180/3.1415;
-            bullet *bull=new bullet;
-            bull->x=100*qCos(-angle*3.1415/180);
-            bull->y=100*qSin(-angle*3.1415/180);
-            bull->CoorX=this->CoorX+41.5*qCos(-angle*3.1415/180);
-            bull->CoorY=this->CoorY+50*qSin(-angle*3.1415/180);
-            bull->signal=4;
-            bull->time=0;
-            bulletVec.push_back(bull);
             for(auto bul=bulletVec.begin();bul!=bulletVec.end();)
             {
                 if((*bul)->signal==0)
@@ -103,44 +40,96 @@ void towerbase::Attack(QVector<enemybase*> &enemy)
                  bul=bulletVec.erase(bul);
                  continue;
                 }
-                (*bul)->CoorX+=bull->x;
-                (*bul)->CoorY-=bull->y;
-                if(distance((*bul)->CoorX,(*bul)->CoorY,targetEnemy->CoorX,targetEnemy->CoorY)<=100)
+//                double angle1=-qAtan2(((*bul)->CoorY-(*bul)->targetenemy->CoorY),((*bul)->targetenemy->CoorX-(*bul)->CoorX))*180/3.1415;
+//                            (*bul)->x=100*qCos(-angle1*3.1415/180);
+//                            (*bul)->y=100*qSin(-angle1*3.1415/180);
+                (*bul)->CoorX+=(*bul)->x;
+                (*bul)->CoorY-=(*bul)->y;
+                if(distance((*bul)->CoorX,(*bul)->CoorY,(*bul)->targetenemy->CoorX+100,(*bul)->targetenemy->CoorY+70)<=100)
                 {(*bul)->signal=5;
-                    targetEnemy->health-=attackpower;
+                    (*bul)->targetenemy->health-=attackpower;
+                    qDebug()<<(*bul)->targetenemy->health;
                     (*bul)->time++;
                 }
                 bul++;
            }
-//            QVector<bullet*> ::iterator bullIt;
-//            bullIt=bulletVec.begin();
+            for(auto ene=enemy.begin();ene!=enemy.end();)
+            {
+                if((*ene)->value<0)//if((*ene)->health<=0)
+                {
+                    if((*ene)==targetEnemy)
+                        targetEnemy=NULL;
+                    delete *ene;
+                    ene=enemy.erase(ene);
+                    continue;
+                    //(*ene)->value=-1000;
+                }
+                if(targetEnemy!=NULL)
+                {
+                    if(distance(targetEnemy->CoorX+100,targetEnemy->CoorY+70,CoorX+41.5,CoorY+50)>range)
+                        targetEnemy=NULL;
+                }
+                ene++;
+            }
 
-//            while(bullIt!=bulletVec.end())
-//            {
-
-//                if((*bullIt)->signal==5&&(*bullIt)->time==2)
-//                {
-//                    bullIt=bulletVec.erase(bullIt);
-//                    delete *bullIt;
-//                    break;
-
-//                }
 //                else
-//                {bullIt++;}
-
-//            }
-    }
-//            for(auto bullIt=bulletVec.begin();bullIt!=bulletVec.end();bullIt++)
-//            {
-//                if(*bullIt->signal==5&&*bullIt->time==2)
 //                {
-//                   //bullet *bull_=bulletVec[i];
-//                    bulletVec.erase(bullIt);
-//                    delete *bullIt;}
+            if(targetEnemy==NULL){
+                    if(enemy.empty())
+                        return;
+                    double dis=distance(enemy[0]->CoorX+100,enemy[0]->CoorY+70,CoorX+41.5,CoorY+50);
+                    if(dis<=range)
+                    {
+                        targetEnemy=enemy[0];
+                    }
+                    for(auto ene=enemy.begin();ene!=enemy.end();ene++)
+                    {
+                        if(distance((*ene)->CoorX+100,(*ene)->CoorY+70,CoorX+41.5,CoorY+50)<dis&&distance((*ene)->CoorX+100,(*ene)->CoorY+70,CoorX+41.5,CoorY+50)<=range)
+                        {
+                            dis=distance((*ene)->CoorX+100,(*ene)->CoorY+70,CoorX+41.5,CoorY+50);
+                            targetEnemy=(*ene);
+
+                        }
+                    }
+                    if(targetEnemy==NULL)
+                        return;
+                }
+}
+            //}
+//            else
+//            {
+//            for(auto bul=bulletVec.begin();bul!=bulletVec.end();)
+//            {
+//                if((*bul)->signal==0||(*bul)->CoorX<0||(*bul)->CoorY<0)
+//                {delete *bul;
+//                 bul=bulletVec.erase(bul);
+//                 continue;
+//                }
+//                (*bul)->CoorX+=(*bul)->x;
+//                (*bul)->CoorY-=(*bul)->y;
+//                if(targetEnemy!=NULL&&distance((*bul)->CoorX,(*bul)->CoorY,targetEnemy->CoorX,targetEnemy->CoorY)<=100)
+//                {(*bul)->signal=5;
+//                    targetEnemy->health-=attackpower;
+//                    qDebug()<<targetEnemy->health;
+//                    (*bul)->time++;
+//                }
+//                bul++;
+//           }
+//            for(auto ene=enemy.begin();ene!=enemy.end();)
+//            {
+//                if(targetEnemy!=NULL)
+//                {
+//                    if(distance(targetEnemy->CoorX,targetEnemy->CoorY,CoorX,CoorY)>range)
+//                        targetEnemy=NULL;
+//                }
+//                ene++;
 //            }
+//            }
+
 
     //if enemy over the range or the target dies, the target will be null
     //if over the range or beat the enemy, the bull will be pop
     //the blood of enemy will decrease if beaten
 
-}
+
+

@@ -9,8 +9,8 @@ defensetower1::defensetower1(QObject *parent) :
     CoorX=0;
     CoorY=0;
     angle=0;
-    range=100;
-    attackpower=100;
+    range=500;
+    attackpower=1000;
 }
 //void defensetower1::Attack(QVector<enemybase*> enemy)
 //{

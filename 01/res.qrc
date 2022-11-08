@@ -61,5 +61,22 @@
         <file>game/ConeheadZombie_18.png</file>
         <file>game/ConeheadZombie_19.png</file>
         <file>game/ConeheadZombie_20.png</file>
+        <file>game/SnowPea_0.png</file>
+        <file>game/SnowPea_1.png</file>
+        <file>game/SnowPea_2.png</file>
+        <file>game/SnowPea_3.png</file>
+        <file>game/SnowPea_4.png</file>
+        <file>game/SnowPea_5.png</file>
+        <file>game/SnowPea_6.png</file>
+        <file>game/SnowPea_7.png</file>
+        <file>game/SnowPea_8.png</file>
+        <file>game/SnowPea_9.png</file>
+        <file>game/SnowPea_10.png</file>
+        <file>game/SnowPea_11.png</file>
+        <file>game/SnowPea_12.png</file>
+        <file>game/SnowPea_13.png</file>
+        <file>game/SnowPea_14.png</file>
+        <file>game/PeaIce_0.png</file>
+        <file>game/BoomDie_0.png</file>
     </qresource>
 </RCC>

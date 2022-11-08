@@ -7,4 +7,5 @@ bullet::bullet(QObject *parent) :
     CoorY=0;
     x=0;
     y=0;
+    targetenemy=NULL;
 }

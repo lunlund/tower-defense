@@ -9,5 +9,6 @@ enemy2::enemy2(QObject *parent) :
     CoorX=0;
     CoorY=0;
     health=3000;
-    attack=50;
+    attack=200;
+    move=1;
 }

@@ -13,60 +13,10 @@
 #include<QMouseEvent>
 #include"enemy1.h"
 #include"enemy2.h"
-//playscene::playscene(QWidget *parent) :
-//    QMainWindow(parent)
-//{
-//}
+#include<QTime>
+#include"plant2.h"
 playscene::playscene(int i)
 {
-    signal=0;
-    //static int mm=0;
-    counter=0;
-    QTimer *timer=new QTimer(this);
-    timer->start(100);
-    connect(timer,&QTimer::timeout,[=](){
-        switch(stage)
-        {case 0:
-            if(counter==0)
-            {
-                enemy1 *e1=new enemy1;
-                e1->CoorX=1001;
-                e1->CoorY=10;
-                enemyVec.push_back(e1);
-                enemy2 *e2=new enemy2;
-                e2->CoorX=1001;
-                e2->CoorY=10;
-                enemyVec.push_back(e2);
-            }
-            else if(counter==15)
-            {
-                enemy1 *e1=new enemy1;
-                e1->CoorX=1001;
-                e1->CoorY=10;
-                enemyVec.push_back(e1);
-            }
-            else if(counter==50)
-            {enemy1 *e1=new enemy1;
-                e1->CoorX=1001;
-                e1->CoorY=10;
-                enemyVec.push_back(e1);}
-            else
-            break;
-        case 1:break;
-        case 2:break;}
-        update();
-        counter++;        
-        for(auto ene=enemyVec.begin();ene!=enemyVec.end();ene++)
-        {
-            (*ene)->CoorX-=(*ene)->speed;
-            (*ene)->value++;
-        }
-        for(auto tow=towerVec.begin();tow!=towerVec.end();tow++)
-        {
-            (*tow)->Attack(enemyVec);
-            (*tow)->counter++;
-        }
-    });
     stage=i;
     qDebug()<<QString::number(stage);
     gamedata da(this);
@@ -76,7 +26,82 @@ playscene::playscene(int i)
         {
             this->b[j][p]=da.a[i][j][p];
         }
-    }    
+    }
+    signal=0;
+    counter=0;
+    QTimer *timer=new QTimer(this);
+    timer->start(100);
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+    connect(timer,&QTimer::timeout,[=](){
+        if(counter>300&&enemyVec.empty())
+        {
+            timer->stop();
+            QLabel *l1=new QLabel(this);
+            QPixmap pix(":/game/006.png");
+            pix=pix.scaled(QSize(pix.width()*0.5,pix.height()*0.5));
+            l1->setPixmap(pix);
+            l1->setFixedSize(pix.width(),pix.height());
+            l1->move(300,100);
+            l1->show();
+        }
+
+        int hangshu=qrand()%5;
+        //qDebug()<<hangshu;
+        if(b[hangshu][0]==1&&counter%5==0&&counter<=300)
+        {
+            enemy1 *e1=new enemy1;
+            e1->CoorX=1001;
+            e1->CoorY=10+hangshu*100;
+            e1->route=hangshu;
+            enemyVec.push_back(e1);
+        }
+        update();
+        counter++;        
+        for(auto ene=enemyVec.begin();ene!=enemyVec.end();)
+        {
+            if((*ene)->CoorX<=140)
+            {
+                timer->stop();
+                QLabel *l1=new QLabel(this);
+                QPixmap pix(":/game/001.png");
+                pix=pix.scaled(QSize(pix.width()*0.5,pix.height()*0.5));
+                l1->setPixmap(pix);
+                l1->setFixedSize(pix.width(),pix.height());
+                l1->move(300,100);
+                l1->show();
+            }
+            (*ene)->Attack(plantVec);
+            if((*ene)->move==1)
+            {
+            (*ene)->CoorX-=(*ene)->speed;
+            }
+            (*ene)->value++;
+            ene++;
+        }
+            for(auto pla=plantVec.begin();pla!=plantVec.end();)
+            {
+                if((*pla)->health<=0)
+                {
+                    b[((*pla)->CoorY-70)/100][((*pla)->CoorX-254)/83]=1;
+                    for(auto ene=enemyVec.begin();ene!=enemyVec.end();ene++)
+                    {
+                        if((*ene)->targetplant==(*pla))
+                        {(*ene)->move=1;
+                         (*ene)->targetplant=NULL;}
+                    }
+                    delete *pla;
+                    pla=plantVec.erase(pla);
+                    continue;
+                }
+                pla++;
+            }
+        for(auto tow=towerVec.begin();tow!=towerVec.end();tow++)
+        {
+            (*tow)->Attack(enemyVec);
+            (*tow)->counter++;
+        }
+    });
+
     this->setFixedSize(1011,600);
     this->setWindowTitle(QString("第%1关").arg(i+1));
     QPushButton *btn2=new QPushButton(this);
@@ -98,6 +123,14 @@ playscene::playscene(int i)
     btn4->resize(80,30);
     btn4->move(50,100);
     connect(btn4,&QPushButton::clicked,[=](){signal=2;});
+    QPushButton *btn5=new QPushButton("nuts",this);
+    btn5->resize(80,30);
+    btn5->move(50,150);
+    connect(btn5,&QPushButton::clicked,[=](){signal=3;});
+    QPushButton *btn6=new QPushButton("snowPea",this);
+    btn6->resize(80,30);
+    btn6->move(50,200);
+    connect(btn6,&QPushButton::clicked,[=](){signal=4;});
 }
 void playscene::mousePressEvent(QMouseEvent *ev)
 {
@@ -106,7 +139,7 @@ void playscene::mousePressEvent(QMouseEvent *ev)
         return;}
     else
     {
-        if(((ev->x()-254)/83>0||(ev->x()-254)/83==0)&&((ev->y()-70)/100)>0||((ev->y()-70)/100)==0&&((ev->x()-254)/83<10)&&((ev->y()-70)/100)<6)
+        if((ev->x()-254)/83>=0&&((ev->y()-70)/100)>=0&&((ev->x()-254)/83<10)&&((ev->y()-70)/100)<6)
        {          
        {switch(signal)
        {case 1:
@@ -118,28 +151,64 @@ void playscene::mousePressEvent(QMouseEvent *ev)
        tower1->CoorX=((ev->x()-254)/83)*83+254;
        tower1->CoorY=((ev->y()-70)/100)*100+70;
        towerVec.push_back(tower1);break;}
-                case 2:
+       case 2:
                     if(b[(ev->y()-70)/100][(ev->x()-254)/83]!=0)
                         return;
                     else
                 {b[(ev->y()-70)/100][(ev->x()-254)/83]=100;
-                        defensetower2 *tower2=new defensetower2;
+                defensetower2 *tower2=new defensetower2;
                 tower2->CoorX=((ev->x()-254)/83)*83+254;
                 tower2->CoorY=((ev->y()-70)/100)*100+70;
                 towerVec.push_back(tower2);break;}
+        case 3:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==1)
+                    {
+                        b[(ev->y()-70)/100][(ev->x()-254)/83]=2;
+                        plant1 *nut=new plant1;
+                        nut->route=(ev->y()-70)/100;
+                        nut->CoorX=((ev->x()-254)/83)*83+254;
+                        nut->CoorY=((ev->y()-70)/100)*100+70;
+                        plantVec.push_back(nut);break;
+                    }
+        case 4:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==1)
+                    {
+                        b[(ev->y()-70)/100][(ev->x()-254)/83]=3;
+                        plant2 *snowPea=new plant2;
+                        snowPea->route=(ev->y()-70)/100;
+                        snowPea->CoorX=((ev->x()-254)/83)*83+254;
+                        snowPea->CoorY=((ev->y()-70)/100)*100+70;
+                        plantVec.push_back(snowPea);break;
+                    }
+
                 }
        signal=0;
-       qDebug()<<"rtyuj";}}
+       //qDebug()<<"rtyuj";
+            }
+        }
 
     }
 }
 void playscene::drawEnemy(QPainter &painter)
 {
-    for(auto ene=enemyVec.begin();ene!=enemyVec.end();ene++)
+    for(auto ene=enemyVec.begin();ene!=enemyVec.end();)
     {
         QPixmap pix;
-        pix.load(QString((*ene)->PicturePath).arg((*ene)->value%20));
+        if((*ene)->health>0)
+            pix.load(QString((*ene)->PicturePath).arg((*ene)->value%22));
+        else
+        {pix.load(":/game/BoomDie_0.png");
+        (*ene)->value=-100;
+            for(auto tow=towerVec.begin();tow!=towerVec.end();tow++)
+            {
+                if((*tow)->targetEnemy==(*ene))
+                {
+                    (*tow)->targetEnemy=NULL;
+                }
+            }
+        }
         painter.drawPixmap((*ene)->CoorX,(*ene)->CoorY,pix);
+        ene++;
     }
 }
 
@@ -151,7 +220,7 @@ void playscene::drawMap(QPainter &painter)
         {
                 for(int p=0;p<=8;p++)
                 {
-                    if(b[j][p]!=0)
+                    if(b[j][p]!=0&&b[j][p]!=100)
                     {
                         pix5.load(":/game/005.png");
                          //continue;
@@ -171,6 +240,21 @@ void playscene::drawMap(QPainter &painter)
                     //btn[j*9+p].move(p*83+250,j*100+70);
                 }
         }
+}
+void playscene::drawPlant(QPainter &painter)
+{
+    for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+    {
+        QPixmap pix;
+        if((*pla)->range==0)//坚果
+        pix.load((*pla)->PicturePath);
+        else//豌豆
+        {
+            pix.load(QString((*pla)->PicturePath).arg((*pla)->value%15));
+            (*pla)->value++;
+        }
+        painter.drawPixmap((*pla)->CoorX,(*pla)->CoorY,pix);
+    }
 }
 
 void playscene::drawTower(QPainter &painter)
@@ -203,6 +287,14 @@ void playscene::drawBullet(QPainter &painter)
             painter.drawPixmap((*bull)->CoorX,(*bull)->CoorY,pix);
         }
     }
+    for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+    {
+        for(auto bul=(*pla)->bulletVec.begin();bul!=(*pla)->bulletVec.end();bul++)
+        {
+            QPixmap pix(":/game/Pealce_0.png");
+            painter.drawPixmap((*bul)->CoorX,(*bul)->CoorY,pix);
+        }
+    }
 }
 
 void playscene::paintEvent(QPaintEvent *)
@@ -215,5 +307,6 @@ void playscene::paintEvent(QPaintEvent *)
     drawTower(painter);
     drawEnemy(painter);
     drawBullet(painter);
+    drawPlant(painter);
 
 }

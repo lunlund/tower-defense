@@ -1,8 +1,9 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include <QObject>
-
+//#include <QObject>
+#include "enemybase.h"
+class enemybase;
 class bullet : public QObject
 {
     Q_OBJECT
@@ -12,6 +13,7 @@ public:
     int x,y;
     int signal=4;
     int time=0;
+    enemybase *targetenemy;
     //QString PicturePath;
 
 signals:

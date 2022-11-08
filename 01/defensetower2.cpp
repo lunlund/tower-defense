@@ -7,7 +7,7 @@ defensetower2::defensetower2(QObject *parent) :
     CoorX=0;
     CoorY=0;
     angle=0;
-    range=120;
+    range=600;
     attackpower=200;
 }
 //void defensetower2::Attack(QVector<enemybase*> enemy)
