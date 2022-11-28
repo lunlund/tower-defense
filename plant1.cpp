@@ -6,11 +6,11 @@ plant1::plant1(QObject *parent) :
     CoorX=0;
     CoorY=0;
     range=0;
-    //attackpower=200;
+    attackpower=0;
     //enemybase* targetEnemy=NULL;
     PicturePath=":/game/016.png";
     //void Attack(QVector<enemybase*> &enemy);
     //counter=0;//counter/5才攻击一次
-    health=3000;
+    health=5000;
     interval=3;
 }

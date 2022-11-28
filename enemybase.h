@@ -23,6 +23,7 @@ public:
     void Attack(QVector<Plants*> &plants);
     bool move=1;
     Plants *targetplant;
+    int kind;//0是普通，1是闪现，2是神速，3是闪现+神速
 
 
 signals:

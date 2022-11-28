@@ -18,7 +18,7 @@ public:
     int stage;
     void paintEvent(QPaintEvent *);
     int b[5][9];//地皮为0未开发，可种远程炮，建完远程跑为100，建植物为2
-    int signal;//信号1建塔1，信号2建塔2，信号3建坚果
+    int signal;//信号1建塔1，信号2建塔2，信号3建坚果,4豌豆，5狂暴，6冰系，7群伤，8放血
     QVector<towerbase*> towerVec;
     QVector<enemybase*> enemyVec;
     void mousePressEvent(QMouseEvent *ev);
@@ -28,6 +28,8 @@ public:
     void drawBullet(QPainter &painter);
     void drawPlant(QPainter &painter);
     QVector<Plants*> plantVec;
+    int texiao[4]={0,0,0,0};//狂暴冰系群伤放血
+    ~playscene();
 signals:void back();
 
 public slots:

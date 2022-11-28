@@ -20,11 +20,18 @@ playscene::playscene(int i)
     stage=i;
     qDebug()<<QString::number(stage);
     gamedata da(this);
+    int valid=0;
+    int c[5]={0,0,0,0,0};
     for(int j=0;j<=4;j++)
     {
         for(int p=0;p<=8;p++)
         {
             this->b[j][p]=da.a[i][j][p];
+        }
+        if(b[j][0]==1)
+        {
+            c[valid]=j;
+            valid++;
         }
     }
     signal=0;
@@ -33,7 +40,7 @@ playscene::playscene(int i)
     timer->start(100);
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
     connect(timer,&QTimer::timeout,[=](){
-        if(counter>300&&enemyVec.empty())
+        if(counter>1000&&enemyVec.empty())
         {
             timer->stop();
             QLabel *l1=new QLabel(this);
@@ -45,11 +52,15 @@ playscene::playscene(int i)
             l1->show();
         }
 
-        int hangshu=qrand()%5;
+        int hangshu=c[qrand()%valid];
         //qDebug()<<hangshu;
-        if(b[hangshu][0]==1&&counter%5==0&&counter<=300)
+        if(counter%5==0&&counter<=1000)//if(b[hangshu][0]==1&&counter%5==0&&counter<=300)
         {
+
             enemy1 *e1=new enemy1;
+            e1->kind=qrand()%4;
+            if(e1->kind==2||e1->kind==3)
+                e1->speed=7;
             e1->CoorX=1001;
             e1->CoorY=10+hangshu*100;
             e1->route=hangshu;
@@ -95,6 +106,14 @@ playscene::playscene(int i)
                 }
                 pla++;
             }
+            for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)//针对豌豆射手
+            {
+                if((*pla)->attackpower!=0)
+                {
+                    (*pla)->Attack(enemyVec);
+                    (*pla)->counter++;
+                }
+            }
         for(auto tow=towerVec.begin();tow!=towerVec.end();tow++)
         {
             (*tow)->Attack(enemyVec);
@@ -131,6 +150,22 @@ playscene::playscene(int i)
     btn6->resize(80,30);
     btn6->move(50,200);
     connect(btn6,&QPushButton::clicked,[=](){signal=4;});
+    QPushButton *btn7=new QPushButton("狂暴",this);
+    btn7->resize(80,30);
+    btn7->move(50,250);
+    connect(btn7,&QPushButton::clicked,[=](){signal=5;});
+    QPushButton *btn8=new QPushButton("冰系",this);
+    btn8->resize(80,30);
+    btn8->move(50,300);
+    connect(btn8,&QPushButton::clicked,[=](){signal=6;});
+    QPushButton *btn9=new QPushButton("群伤",this);
+    btn9->resize(80,30);
+    btn9->move(50,350);
+    connect(btn9,&QPushButton::clicked,[=](){signal=7;});
+    QPushButton *btn10=new QPushButton("放血",this);
+    btn10->resize(80,30);
+    btn10->move(50,400);
+    connect(btn10,&QPushButton::clicked,[=](){signal=8;});
 }
 void playscene::mousePressEvent(QMouseEvent *ev)
 {
@@ -198,6 +233,7 @@ void playscene::drawEnemy(QPainter &painter)
             pix.load(QString((*ene)->PicturePath).arg((*ene)->value%22));
         else
         {pix.load(":/game/BoomDie_0.png");
+            texiao[((*ene)->value+(*ene)->CoorX+(*ene)->kind)%4]++;
         (*ene)->value=-100;
             for(auto tow=towerVec.begin();tow!=towerVec.end();tow++)
             {
@@ -240,6 +276,14 @@ void playscene::drawMap(QPainter &painter)
                     //btn[j*9+p].move(p*83+250,j*100+70);
                 }
         }
+//        for(int i=0;i<=3;i++)//250,300,350,400,+100
+//        {
+//            QFont font;
+//            font.setPixelSize(30);
+//            painter.setFont(font);
+//            painter.setPen(Qt::blue);
+//            painter.drawText(50,340+i*50,QString::number(texiao[i]));
+//        }
 }
 void playscene::drawPlant(QPainter &painter)
 {
@@ -291,8 +335,10 @@ void playscene::drawBullet(QPainter &painter)
     {
         for(auto bul=(*pla)->bulletVec.begin();bul!=(*pla)->bulletVec.end();bul++)
         {
-            QPixmap pix(":/game/Pealce_0.png");
+            QPixmap pix(":/game/PeaIce_0.png");
             painter.drawPixmap((*bul)->CoorX,(*bul)->CoorY,pix);
+            if((*bul)->signal==5)
+                (*bul)->signal=0;
         }
     }
 }
@@ -308,5 +354,41 @@ void playscene::paintEvent(QPaintEvent *)
     drawEnemy(painter);
     drawBullet(painter);
     drawPlant(painter);
+    for(int i=0;i<=3;i++)//250,300,350,400,+100
+    {
+        QFont font;
+        font.setPixelSize(30);
+        painter.setFont(font);
+        painter.setPen(Qt::blue);
+        painter.drawText(140,280+i*50,QString::number(texiao[i]));
+    }
 
+}
+playscene::~playscene()
+{
+    for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+    {
+        for(auto bul=(*pla)->bulletVec.begin();bul!=(*pla)->bulletVec.end();bul++)
+        {
+            delete *bul;
+        }
+        (*pla)->bulletVec.clear();
+        delete *pla;
+    }
+    plantVec.clear();
+    for(auto tow=towerVec.begin();tow!=towerVec.end();tow++)
+    {
+        for(auto bul=(*tow)->bulletVec.begin();bul!=(*tow)->bulletVec.end();bul++)
+        {
+            delete *bul;
+        }
+        (*tow)->bulletVec.clear();
+        delete *tow;
+    }
+    towerVec.clear();
+    for(auto ene=enemyVec.begin();ene!=enemyVec.end();ene++)
+    {
+        delete *ene;
+    }
+    enemyVec.clear();
 }

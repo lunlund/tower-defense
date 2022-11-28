@@ -17,7 +17,15 @@ void enemybase::Attack(QVector<Plants*> &plants)
             if(CoorX+100-((*pla)->CoorX+65)<=10&&CoorX+100-((*pla)->CoorX+65)>=0)
             {
                 targetplant=(*pla);
+                if(kind==0||kind==2)
                 move=0;
+                else
+                {
+                    if(kind==1)
+                        speed=1;
+                    else
+                        speed=2;
+                }
                 (*pla)->health-=this->attack;
             }
         }

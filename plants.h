@@ -6,6 +6,7 @@
 #include"bullet.h"
 #include<QVector>
 class bullet;
+class enemybase;
 class Plants : public QObject
 {
     Q_OBJECT
@@ -17,7 +18,7 @@ public:
     //enemybase* targetEnemy=NULL;
     QVector<bullet*> bulletVec;
     QString PicturePath;
-    //void Attack(QVector<enemybase*> &enemy);
+    virtual void Attack(QVector<enemybase*> &enemy);
     double distance(int a,int b,int c,int d);
     int counter=0;
     int health;

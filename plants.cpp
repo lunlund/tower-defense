@@ -9,3 +9,7 @@ Plants::Plants(QObject *parent) :
 {
 value=0;
 }
+void Plants::Attack(QVector<enemybase*> &enemy)
+{
+    return;
+}
