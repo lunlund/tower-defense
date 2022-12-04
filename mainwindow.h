@@ -16,7 +16,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void paintEvent(QPaintEvent *);
-    choosescene *choose;
+    choosescene *choose=NULL;
 
 private:
     Ui::MainWindow *ui;

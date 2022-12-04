@@ -22,8 +22,9 @@ public:
     int route;
     void Attack(QVector<Plants*> &plants);
     bool move=1;
-    Plants *targetplant;
+    Plants *targetplant=NULL;
     int kind;//0是普通，1是闪现，2是神速，3是闪现+神速
+    int dirty=0;
 
 
 signals:

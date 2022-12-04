@@ -20,6 +20,7 @@ public:
     void Attack(QVector<enemybase*> &enemy);
     double distance(int a,int b,int c,int d);
     int counter=0;//counter/5才攻击一次
+    int kind;
 
 
 

@@ -9,7 +9,7 @@ class choosescene : public QMainWindow
 public:
     explicit choosescene(QWidget *parent = 0);
     void paintEvent(QPaintEvent *);
-    playscene *play;
+    playscene *play=NULL;
 
 signals:void back();
 

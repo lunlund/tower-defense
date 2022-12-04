@@ -4,7 +4,7 @@
 towerbase::towerbase(QObject *parent) :
     QObject(parent)
 {
-
+kind=100;
 }
 double towerbase::distance(int a,int b,int c,int d)
 {
@@ -12,6 +12,11 @@ double towerbase::distance(int a,int b,int c,int d)
 }
 void towerbase::Attack(QVector<enemybase*> &enemy)
 {
+    for(auto ene=enemy.begin();ene!=enemy.end();ene++)
+    {
+        (*ene)->health-=((*ene)->dirty)*attackpower;
+        (*ene)->dirty=0;
+    }
             if(counter%10==0&&targetEnemy!=NULL)
            {angle=-qAtan2((this->CoorY+50-targetEnemy->CoorY-70),(targetEnemy->CoorX+100-this->CoorX-41.5))*180/3.1415;
                 bullet *bull=new bullet;
@@ -23,15 +28,15 @@ void towerbase::Attack(QVector<enemybase*> &enemy)
                 bull->time=0;
                 bull->targetenemy=targetEnemy;
                 bulletVec.push_back(bull);}
-                if(enemy.size()==0)
-                {
-                    for(auto bul=bulletVec.begin();bul!=bulletVec.end();bul++)
-                    {
-                        delete *bul;
-                    }
-                    bulletVec.clear();
-                    return;
-                }
+//                if(enemy.size()==0)
+//                {
+//                    for(auto bul=bulletVec.begin();bul!=bulletVec.end();bul++)
+//                    {
+//                        delete *bul;
+//                    }
+//                    bulletVec.clear();
+//                    return;
+//                }
 
             for(auto bul=bulletVec.begin();bul!=bulletVec.end();)
             {
@@ -40,9 +45,6 @@ void towerbase::Attack(QVector<enemybase*> &enemy)
                  bul=bulletVec.erase(bul);
                  continue;
                 }
-//                double angle1=-qAtan2(((*bul)->CoorY-(*bul)->targetenemy->CoorY),((*bul)->targetenemy->CoorX-(*bul)->CoorX))*180/3.1415;
-//                            (*bul)->x=100*qCos(-angle1*3.1415/180);
-//                            (*bul)->y=100*qSin(-angle1*3.1415/180);
                 (*bul)->CoorX+=(*bul)->x;
                 (*bul)->CoorY-=(*bul)->y;
                 if(distance((*bul)->CoorX,(*bul)->CoorY,(*bul)->targetenemy->CoorX+100,(*bul)->targetenemy->CoorY+70)<=100)
@@ -50,6 +52,10 @@ void towerbase::Attack(QVector<enemybase*> &enemy)
                     (*bul)->targetenemy->health-=attackpower;
                     qDebug()<<(*bul)->targetenemy->health;
                     (*bul)->time++;
+                    if(kind>105)
+                    {
+                        (*bul)->targetenemy->dirty++;
+                    }
                 }
                 bul++;
            }
@@ -71,9 +77,6 @@ void towerbase::Attack(QVector<enemybase*> &enemy)
                 }
                 ene++;
             }
-
-//                else
-//                {
             if(targetEnemy==NULL){
                     if(enemy.empty())
                         return;

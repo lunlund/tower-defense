@@ -13,7 +13,8 @@ public:
     int x,y;
     int signal=4;
     int time=0;
-    enemybase *targetenemy;
+    int kind=-1;
+    enemybase *targetenemy=NULL;
     //QString PicturePath;
 
 signals:

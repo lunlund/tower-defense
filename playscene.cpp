@@ -15,13 +15,14 @@
 #include"enemy2.h"
 #include<QTime>
 #include"plant2.h"
+#include<algorithm>
 playscene::playscene(int i)
 {
     stage=i;
     qDebug()<<QString::number(stage);
     gamedata da(this);
     int valid=0;
-    int c[5]={0,0,0,0,0};
+    int cc[5]={0,0,0,0,0};
     for(int j=0;j<=4;j++)
     {
         for(int p=0;p<=8;p++)
@@ -30,7 +31,7 @@ playscene::playscene(int i)
         }
         if(b[j][0]==1)
         {
-            c[valid]=j;
+            cc[valid]=j;
             valid++;
         }
     }
@@ -52,7 +53,7 @@ playscene::playscene(int i)
             l1->show();
         }
 
-        int hangshu=c[qrand()%valid];
+        int hangshu=cc[qrand()%valid];
         //qDebug()<<hangshu;
         if(counter%5==0&&counter<=1000)//if(b[hangshu][0]==1&&counter%5==0&&counter<=300)
         {
@@ -153,19 +154,54 @@ playscene::playscene(int i)
     QPushButton *btn7=new QPushButton("狂暴",this);
     btn7->resize(80,30);
     btn7->move(50,250);
-    connect(btn7,&QPushButton::clicked,[=](){signal=5;});
+    connect(btn7,&QPushButton::clicked,[=](){
+        if(texiao[0]>0)
+        {   signal=5;
+            texiao[0]--;
+        }
+    });
     QPushButton *btn8=new QPushButton("冰系",this);
     btn8->resize(80,30);
     btn8->move(50,300);
-    connect(btn8,&QPushButton::clicked,[=](){signal=6;});
+    connect(btn8,&QPushButton::clicked,[=](){
+        if(texiao[1]>0)
+           { signal=6;
+        texiao[1]--;
+        }
+    });
     QPushButton *btn9=new QPushButton("群伤",this);
     btn9->resize(80,30);
     btn9->move(50,350);
-    connect(btn9,&QPushButton::clicked,[=](){signal=7;});
+    connect(btn9,&QPushButton::clicked,[=](){
+        if(texiao[2]>0)
+           { signal=7;
+            texiao[2]--;
+        }
+    });
     QPushButton *btn10=new QPushButton("放血",this);
     btn10->resize(80,30);
     btn10->move(50,400);
-    connect(btn10,&QPushButton::clicked,[=](){signal=8;});
+    connect(btn10,&QPushButton::clicked,[=](){
+        if(texiao[3]>0)
+        {signal=8;
+            texiao[3]--;
+        }});
+    QPushButton *btn11=new QPushButton("删狂暴",this);
+    btn11->resize(60,30);
+    btn11->move(140,250);
+    connect(btn11,&QPushButton::clicked,[=](){signal=11;});
+    QPushButton *btn12=new QPushButton("删冰系",this);
+    btn12->resize(60,30);
+    btn12->move(140,300);
+    connect(btn12,&QPushButton::clicked,[=](){signal=12;});
+    QPushButton *btn13=new QPushButton("删群伤",this);
+    btn13->resize(60,30);
+    btn13->move(140,350);
+    connect(btn13,&QPushButton::clicked,[=](){signal=13;});
+    QPushButton *btn14=new QPushButton("删放血",this);
+    btn14->resize(60,30);
+    btn14->move(140,400);
+    connect(btn14,&QPushButton::clicked,[=](){signal=14;});
 }
 void playscene::mousePressEvent(QMouseEvent *ev)
 {
@@ -185,16 +221,16 @@ void playscene::mousePressEvent(QMouseEvent *ev)
        defensetower1 *tower1=new defensetower1;
        tower1->CoorX=((ev->x()-254)/83)*83+254;
        tower1->CoorY=((ev->y()-70)/100)*100+70;
-       towerVec.push_back(tower1);break;}
+       towerVec.push_back(tower1);break;}break;
        case 2:
                     if(b[(ev->y()-70)/100][(ev->x()-254)/83]!=0)
                         return;
                     else
-                {b[(ev->y()-70)/100][(ev->x()-254)/83]=100;
+                {b[(ev->y()-70)/100][(ev->x()-254)/83]=101;
                 defensetower2 *tower2=new defensetower2;
                 tower2->CoorX=((ev->x()-254)/83)*83+254;
                 tower2->CoorY=((ev->y()-70)/100)*100+70;
-                towerVec.push_back(tower2);break;}
+                towerVec.push_back(tower2);break;}break;
         case 3:
                     if(b[(ev->y()-70)/100][(ev->x()-254)/83]==1)
                     {
@@ -204,7 +240,7 @@ void playscene::mousePressEvent(QMouseEvent *ev)
                         nut->CoorX=((ev->x()-254)/83)*83+254;
                         nut->CoorY=((ev->y()-70)/100)*100+70;
                         plantVec.push_back(nut);break;
-                    }
+                    }break;
         case 4:
                     if(b[(ev->y()-70)/100][(ev->x()-254)/83]==1)
                     {
@@ -214,9 +250,199 @@ void playscene::mousePressEvent(QMouseEvent *ev)
                         snowPea->CoorX=((ev->x()-254)/83)*83+254;
                         snowPea->CoorY=((ev->y()-70)/100)*100+70;
                         plantVec.push_back(snowPea);break;
+                    }break;
+        case 5:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==3)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind=8;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]=8;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
                     }
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==9)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind=14;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]=14;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==10)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind=15;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]=15;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }break;
+       case 6:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==3)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind=9;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]=9;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==8)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind=14;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]=14;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==10)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind=16;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]=16;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }break;
+       case 7:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==3)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind=10;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]=10;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==8)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind=15;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]=15;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==9)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind=16;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]=16;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }break;
+        case 8:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==100||b[(ev->y()-70)/100][(ev->x()-254)/83]==101)
+                    {
+                        for(auto tow=towerVec.begin();tow!=towerVec.end();tow++)
+                        {
+                            if((*tow)->CoorX==((ev->x()-254)/83)*83+254&&(*tow)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*tow)->kind+=8;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]+=8;
+                                //qDebug()<<"bic";
+                                break;
+                            }
+                        }
+                    }break;
+       case 11:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==8||b[(ev->y()-70)/100][(ev->x()-254)/83]==14||b[(ev->y()-70)/100][(ev->x()-254)/83]==15)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind-=5;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]-=5;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }break;
+       case 12:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==9||b[(ev->y()-70)/100][(ev->x()-254)/83]==14||b[(ev->y()-70)/100][(ev->x()-254)/83]==16)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind-=6;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]-=6;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }break;
+       case 13:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]==10||b[(ev->y()-70)/100][(ev->x()-254)/83]==15||b[(ev->y()-70)/100][(ev->x()-254)/83]==16)
+                    {
+                        for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+                        {
+                            if((*pla)->CoorX==((ev->x()-254)/83)*83+254&&(*pla)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*pla)->kind-=7;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]-=7;
+                                //qDebug()<<"bi";
+                                break;
+                            }
+                        }
+                    }break;
+       case 14:
+                    if(b[(ev->y()-70)/100][(ev->x()-254)/83]>106)
+                    {
+                        for(auto tow=towerVec.begin();tow!=towerVec.end();tow++)
+                        {
+                            if((*tow)->CoorX==((ev->x()-254)/83)*83+254&&(*tow)->CoorY==((ev->y()-70)/100)*100+70)
+                            {
+                                (*tow)->kind-=8;
+                                b[(ev->y()-70)/100][(ev->x()-254)/83]-=8;
+                                //qDebug()<<"bic";
+                                break;
+                            }
+                        }
+                    }break;
 
-                }
+       }
        signal=0;
        //qDebug()<<"rtyuj";
             }
@@ -256,7 +482,7 @@ void playscene::drawMap(QPainter &painter)
         {
                 for(int p=0;p<=8;p++)
                 {
-                    if(b[j][p]!=0&&b[j][p]!=100)
+                    if(b[j][p]!=0&&b[j][p]<100)
                     {
                         pix5.load(":/game/005.png");
                          //continue;
@@ -360,8 +586,88 @@ void playscene::paintEvent(QPaintEvent *)
         font.setPixelSize(30);
         painter.setFont(font);
         painter.setPen(Qt::blue);
-        painter.drawText(140,280+i*50,QString::number(texiao[i]));
+        painter.drawText(10,280+i*50,QString::number(texiao[i]));
     }
+    for(auto ene=enemyVec.begin();ene!=enemyVec.end();ene++)
+    {
+        QFont font;
+        font.setPixelSize(20);
+        painter.setFont(font);
+        painter.setPen(Qt::blue);
+        if((*ene)->kind==0)
+        painter.drawText((*ene)->CoorX+60,(*ene)->CoorY+20,QString("普通(%1)").arg(QString::number((*ene)->health)));
+        if((*ene)->kind==1)
+        painter.drawText((*ene)->CoorX+60,(*ene)->CoorY+20,QString("闪现(%1)").arg(QString::number((*ene)->health)));
+        if((*ene)->kind==2)
+        painter.drawText((*ene)->CoorX+60,(*ene)->CoorY+20,QString("神速(%1)").arg(QString::number((*ene)->health)));
+        if((*ene)->kind==3)
+        painter.drawText((*ene)->CoorX+60,(*ene)->CoorY+20,QString("闪+神(%1)").arg(QString::number((*ene)->health)));
+    }
+    for(auto pla=plantVec.begin();pla!=plantVec.end();pla++)
+    {
+        QFont font;
+        font.setPixelSize(20);
+        painter.setFont(font);
+        painter.setPen(Qt::color0);
+        if((*pla)->kind==-1)
+        {
+            painter.drawText((*pla)->CoorX,(*pla)->CoorY,QString("坚果(%1)").arg(QString::number((*pla)->health)));
+        }
+        if((*pla)->kind==3)
+        {
+            painter.drawText((*pla)->CoorX,(*pla)->CoorY,QString("普通(%1)").arg(QString::number((*pla)->health)));
+        }
+        if((*pla)->kind==8)
+        {
+            painter.drawText((*pla)->CoorX,(*pla)->CoorY,QString("狂暴(%1)").arg(QString::number((*pla)->health)));
+        }
+        if((*pla)->kind==9)
+        {
+            painter.drawText((*pla)->CoorX,(*pla)->CoorY,QString("冰系(%1)").arg(QString::number((*pla)->health)));
+        }
+        if((*pla)->kind==10)
+        {
+            painter.drawText((*pla)->CoorX,(*pla)->CoorY,QString("群伤(%1)").arg(QString::number((*pla)->health)));
+        }
+        if((*pla)->kind==14)
+        {
+            painter.drawText((*pla)->CoorX,(*pla)->CoorY,QString("狂+冰(%1)").arg(QString::number((*pla)->health)));
+        }
+        if((*pla)->kind==15)
+        {
+            painter.drawText((*pla)->CoorX,(*pla)->CoorY,QString("狂+群(%1)").arg(QString::number((*pla)->health)));
+        }
+        if((*pla)->kind==16)
+        {
+            painter.drawText((*pla)->CoorX,(*pla)->CoorY,QString("冰+群(%1)").arg(QString::number((*pla)->health)));
+        }
+    }
+    for(auto tow=towerVec.begin();tow!=towerVec.end();tow++)
+    {
+        QFont font;
+        font.setPixelSize(20);
+        painter.setFont(font);
+        painter.setPen(Qt::color1);
+        if((*tow)->kind<106)
+        {
+            painter.drawText((*tow)->CoorX,(*tow)->CoorY,"普通");
+        }
+        else
+        {
+            painter.drawText((*tow)->CoorX,(*tow)->CoorY,"放血");
+        }
+    }
+    QFont font;
+    font.setPixelSize(50);
+    font.setOverline(1);
+    font.setBold(1);
+    font.setItalic(1);
+    painter.setFont(font);
+    painter.setPen(Qt::black);
+    if(counter>1000)
+        painter.drawText(50,40,QString::number(0));
+    else
+        painter.drawText(50,40,QString::number((1000-counter)/10));
 
 }
 playscene::~playscene()

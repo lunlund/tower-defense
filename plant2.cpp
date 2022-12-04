@@ -14,10 +14,13 @@ plant2::plant2(QObject *parent) :
     //void Attack(QVector<enemybase*> &enemy);
     //counter=0;//counter/5才攻击一次
     health=1000;
-    interval=3;
+    interval=4;
+    kind=3;
 }
 void plant2::Attack(QVector<enemybase*> &enemy)
 {
+    if(kind==8||kind==14||kind==15)
+        interval=2;
     if(counter%interval==0)
     {
     for(auto ene=enemy.begin();ene!=enemy.end();ene++)
@@ -29,6 +32,7 @@ void plant2::Attack(QVector<enemybase*> &enemy)
             bull->CoorY=this->CoorY;
             bull->x=50;
             bull->y=0;
+            bull->kind=kind;
             //bull->targetenemy=(*ene);
             bulletVec.push_back(bull);
         }
@@ -41,18 +45,31 @@ void plant2::Attack(QVector<enemybase*> &enemy)
             if((*ene)->route==route&&(*ene)->CoorX+100-(*bul)->CoorX-25<=80&&(*ene)->CoorX+100-(*bul)->CoorX-25>=0)
             {
                 (*ene)->health-=this->attackpower;
+                if((*bul)->kind==9||(*bul)->kind==14||(*bul)->kind==16)
+                {
+                    if((*ene)->speed<=5)
+                        (*ene)->speed=2;
+                    else
+                        (*ene)->speed=4;
+                }
                 qDebug()<<(*ene)->health;
                 //(*bul)->signal=5;
+                if((*bul)->kind==10||(*bul)->kind==15||(*bul)->kind==16)
+                {
+                    ;
+                }
+                else{
                 delete *bul;
                 bul=bulletVec.erase(bul);
                 continue;
+                }
             }
             bul++;
         }
     }
     for(auto ene=enemy.begin();ene!=enemy.end();)
     {
-        if((*ene)->value<0)//if((*ene)->health<=0)
+        if((*ene)->value<0)
         {
             delete *ene;
             ene=enemy.erase(ene);
@@ -70,6 +87,12 @@ void plant2::Attack(QVector<enemybase*> &enemy)
 //        }
         (*bul)->CoorX+=(*bul)->x;
         (*bul)->CoorY-=(*bul)->y;
+        if((*bul)->CoorX>1100)
+        {
+            delete *bul;
+            bul=bulletVec.erase(bul);
+            continue;
+        }
         bul++;
    }
 

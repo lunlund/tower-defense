@@ -17,7 +17,7 @@ public:
     playscene(int i);
     int stage;
     void paintEvent(QPaintEvent *);
-    int b[5][9];//地皮为0未开发，可种远程炮，建完远程跑为100，建植物为2
+    int b[5][9];//地皮为0未开发，可种远程炮，建完远程跑为100塔1，101塔2，建坚果为2，建豌豆为3，
     int signal;//信号1建塔1，信号2建塔2，信号3建坚果,4豌豆，5狂暴，6冰系，7群伤，8放血
     QVector<towerbase*> towerVec;
     QVector<enemybase*> enemyVec;

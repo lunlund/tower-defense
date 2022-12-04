@@ -25,6 +25,7 @@ public:
     int interval;
     int route;
     int value;
+    int kind=-1;
 
 signals:
 
